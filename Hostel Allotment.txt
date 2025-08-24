@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Hostel {
+    int id;
+    char name[50];
+    int roomNo;
+    char block[10];
+    struct Hostel *next;
+};
+
+struct Hostel *head = NULL;
+
+// Function to create new node
+struct Hostel* createNode(int id, char name[], int roomNo, char block[]) {
+    struct Hostel *newNode = (struct Hostel*)malloc(sizeof(struct Hostel));
+    newNode->id = id;
+    strcpy(newNode->name, name);
+    newNode->roomNo = roomNo;
+    strcpy(newNode->block, block);
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Add new allotment
+void addAllotment(int id, char name[], int roomNo, char block[]) {
+    struct Hostel *newNode = createNode(id, name, roomNo, block);
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Hostel *temp = head;
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = newNode;
+    }
+    printf("Allotment added successfully!\n");
+}
+
+// Remove student
+void removeAllotment(int id) {
+    struct Hostel *temp = head, *prev = NULL;
+    while (temp != NULL && temp->id != id) {
+        prev = temp;
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        printf("Student ID not found!\n");
+        return;
+    }
+    if (prev == NULL) {
+        head = temp->next;
+    } else {
+        prev->next = temp->next;
+    }
+    free(temp);
+    printf("Allotment removed successfully!\n");
+}
+
+// Search student
+void searchAllotment(int id) {
+    struct Hostel *temp = head;
+    while (temp != NULL) {
+        if (temp->id == id) {
+            printf("\nStudent Found:\nID: %d\nName: %s\nRoom: %d\nBlock: %s\n",
+                   temp->id, temp->name, temp->roomNo, temp->block);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Student not found!\n");
+}
+
+// Display all allotments
+void displayAll() {
+    struct Hostel *temp = head;
+    if (temp == NULL) {
+        printf("No allotments!\n");
+        return;
+    }
+    printf("\nHostel Allotments:\n");
+    while (temp != NULL) {
+        printf("ID: %d | Name: %s | Room: %d | Block: %s\n",
+               temp->id, temp->name, temp->roomNo, temp->block);
+        temp = temp->next;
+    }
+}
+
+// Reverse display using recursion
+void reverseDisplay(struct Hostel *node) {
+    if (node == NULL) return;
+    reverseDisplay(node->next);
+    printf("ID: %d | Name: %s | Room: %d | Block: %s\n",
+           node->id, node->name, node->roomNo, node->block);
+}
+
+// Count students per block
+void countBlock(char blockName[]) {
+    struct Hostel *temp = head;
+    int count = 0;
+    while (temp != NULL) {
+        if (strcmp(temp->block, blockName) == 0) {
+            count++;
+        }
+        temp = temp->next;
+    }
+    printf("Total students in Block %s: %d\n", blockName, count);
+}
+
+// Main
+int main() {
+    int choice, id, room;
+    char name[50], block[10];
+
+    while (1) {
+        printf("\n--- Hostel Allotment System ---\n");
+        printf("1. Add Allotment\n2. Remove Allotment\n3. Search Allotment\n");
+        printf("4. Display Allotments\n5. Reverse Display\n6. Count Block-wise\n7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter ID, Name, Room No, Block: ");
+                scanf("%d %s %d %s", &id, name, &room, block);
+                addAllotment(id, name, room, block);
+                break;
+            case 2:
+                printf("Enter Student ID to remove: ");
+                scanf("%d", &id);
+                removeAllotment(id);
+                break;
+            case 3:
+                printf("Enter Student ID to search: ");
+                scanf("%d", &id);
+                searchAllotment(id);
+                break;
+            case 4:
+                displayAll();
+                break;
+            case 5:
+                reverseDisplay(head);
+                break;
+            case 6:
+                printf("Enter Block Name: ");
+                scanf("%s", block);
+                countBlock(block);
+                break;
+            case 7:
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
